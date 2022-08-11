@@ -3,12 +3,18 @@ const { Sequelize } = require('sequelize');
 const fs = require('fs');
 const path = require('path');
 const {
-  DB_USER, DB_PASSWORD, DB_HOST,DB_NAME,DATABASE_URL
+  DB_USER, DB_PASSWORD, DB_HOST, DB_NAME, DATABASE_URL
 } = process.env;
 
 const sequelize = new Sequelize(DATABASE_URL, {
-  logging: false, // set to console.log to see the raw SQL queries
+  logging: true, // set to console.log to see the raw SQL queries
   native: false, // lets Sequelize know we can use pg-native for ~30% more speed
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
+  }
 });
 const basename = path.basename(__filename);
 
@@ -34,8 +40,8 @@ const { Recipe, Diet } = sequelize.models;
 
 // Aca vendrian las relaciones
 // Product.hasMany(Reviews);
-Recipe.belongsToMany(Diet, {through: 'recipe_diet'}) // tabla intermedia
-Diet.belongsToMany(Recipe, {through: 'recipe_diet'})
+Recipe.belongsToMany(Diet, { through: 'recipe_diet' }) // tabla intermedia
+Diet.belongsToMany(Recipe, { through: 'recipe_diet' })
 
 //las recetas pueden tener varios tipos de dieta, y los dietas pueden tener varias recetas
 
